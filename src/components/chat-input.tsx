@@ -1,4 +1,4 @@
-import { Forward } from "lucide-react";
+import { Forward, Loader2Icon } from "lucide-react";
 import type React from "react";
 import { useCallback, useRef, useState } from "react";
 import { Button } from "./ui/button";
@@ -7,6 +7,7 @@ import { Textarea } from "./ui/textarea";
 interface ChatInputProps {
 	onSendInput: (value: string) => void;
 	disabled?: boolean;
+	isLoading?: boolean;
 }
 const ChatInput = (props: ChatInputProps) => {
 	const [isMultiline, setIsMultiline] = useState(false);
@@ -40,7 +41,6 @@ const ChatInput = (props: ChatInputProps) => {
 	};
 
 	const submit = useCallback(() => {
-		console.log("Submitting message:", inputValue);
 		props.onSendInput(inputValue);
 		setInputValue("");
 		requestAnimationFrame(() => recalc());
@@ -63,18 +63,22 @@ const ChatInput = (props: ChatInputProps) => {
 				onChange={onChange}
 				onKeyDown={onKeyDown}
 				rows={1}
-				disabled={props.disabled}
+				disabled={props.disabled || props.isLoading}
 				className="w-full resize-none min-h-14 max-h-72 pr-14 pl-5 leading-relaxed text-base! py-3"
 			/>
 			<Button
 				size={"icon"}
 				onClick={submit}
-				disabled={props.disabled || !inputValue.trim()}
+				disabled={props.disabled || !inputValue.trim() || props.isLoading}
 				className={`absolute right-3 transition-all ${
 					isMultiline ? "bottom-3" : "top-1/2 -translate-y-1/2"
 				}`}
 			>
-				<Forward />
+				{props.isLoading ? (
+					<Loader2Icon className="animate-spin" />
+				) : (
+					<Forward />
+				)}
 			</Button>
 		</div>
 	);
